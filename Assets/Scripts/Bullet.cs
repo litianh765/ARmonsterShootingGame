@@ -26,7 +26,8 @@ public class Bullet : MonoBehaviour,IMoveObj
 
     private void OnTriggerEnter(Collider col)
     {
-        col.transform.SendMessage("Hitted",col.gameObject);
+        col.transform.SendMessage("Hitted",col);
+        SelfDestory();
     }
 
     public void SetDir(Vector3 dir)
@@ -48,5 +49,6 @@ public class Bullet : MonoBehaviour,IMoveObj
     void SelfDestory()
     {
         Destroy(this.gameObject);
+        Debug.Log("destory");
     }
 }

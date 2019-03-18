@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpawnGrid {
     public bool IsOccupy { get; set; }
-
+    public bool InRange { get; set; }
     public float Z { get;private set; }
 
     public float Y { get;private set; }

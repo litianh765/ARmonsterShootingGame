@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a27209ce9b8564eb8ff7080c640d60, type: 3}
   m_Name: SpawngridConfig
   m_EditorClassIdentifier: 
-  height: 1
-  width: 3
-  length: 3
+  height: 2
+  width: 4
+  length: 4
   gap: 1

@@ -6,13 +6,16 @@ public class Coin : MonoBehaviour,IMoveObj
 {
     private float speed;
     public float Speed { get =>speed; set => throw new System.NotImplementedException(); }
-
+    public int BounsVal { get; set; }
     //target is deivece
     private GameManager gm;
 
     void Awake()
     {
-        speed = 1f;
+        speed = 2f;
+
+        //test bounsval set
+        BounsVal = 10;
     }
     public void Movement()
     {
@@ -25,6 +28,7 @@ public class Coin : MonoBehaviour,IMoveObj
     {
         if (transform.position == gm.deviceGO.transform.position)
         {
+            gm.CurrentScore+=BounsVal;
             Destroy(this.gameObject);
         }
     }

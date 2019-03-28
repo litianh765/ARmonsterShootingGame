@@ -72,7 +72,6 @@ namespace GoogleARCore.Examples.Common
         {
             m_Mesh = GetComponent<MeshFilter>().mesh;
             m_MeshRenderer = GetComponent<UnityEngine.MeshRenderer>();
-            this.gameObject.layer = 12;
         }
 
         /// <summary>

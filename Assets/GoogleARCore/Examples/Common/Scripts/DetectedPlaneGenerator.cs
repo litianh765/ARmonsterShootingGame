@@ -23,7 +23,7 @@ namespace GoogleARCore.Examples.Common
     using System.Collections.Generic;
     using GoogleARCore;
     using UnityEngine;
-    using UnityEngine.UI;
+
     /// <summary>
     /// Manages the visualization of detected planes in the scene.
     /// </summary>
@@ -59,9 +59,7 @@ namespace GoogleARCore.Examples.Common
                 // the origin with an identity rotation since the mesh for our prefab is updated in Unity World
                 // coordinates.
                 GameObject planeObject = Instantiate(DetectedPlanePrefab, Vector3.zero, Quaternion.identity, transform);
-                planeObject.layer = 12;
                 planeObject.GetComponent<DetectedPlaneVisualizer>().Initialize(m_NewPlanes[i]);
-                planeObject.AddComponent<MeshCollider>();
             }
         }
     }

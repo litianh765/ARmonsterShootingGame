@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/ARScene.unity
+    guid: c98f44545d6d70047864b3035977b116
+  - enabled: 1
+    path: Assets/Tree_Avatar.unity
+    guid: e0073d388d173445e997dae658e43038
   m_configObjects: {}

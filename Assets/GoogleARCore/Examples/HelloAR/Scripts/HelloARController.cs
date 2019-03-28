@@ -43,7 +43,8 @@ namespace GoogleARCore.Examples.HelloAR
         /// <summary>
         /// A prefab for tracking and visualizing detected planes.
         /// </summary>
-        public GameObject DetectedPlanePrefab;
+        //no plane detection
+        //public GameObject DetectedPlanePrefab;
 
         /// <summary>
         /// A model to place when a raycast from a user touch hits a plane.
@@ -72,55 +73,55 @@ namespace GoogleARCore.Examples.HelloAR
         {
             _UpdateApplicationLifecycle();
 
-            //// If the player has not touched the screen, we are done with this update.
-            //Touch touch;
-            //if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
-            //{
-            //    return;
-            //}
+            // If the player has not touched the screen, we are done with this update.
+            Touch touch;
+            if (Input.touchCount < 1 || (touch = Input.GetTouch(0)).phase != TouchPhase.Began)
+            {
+                return;
+            }
 
-            //// Raycast against the location the player touched to search for planes.
-            //TrackableHit hit;
-            //TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
-            //    TrackableHitFlags.FeaturePointWithSurfaceNormal;
+            // Raycast against the location the player touched to search for planes.
+            TrackableHit hit;
+            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
+                TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
-            //if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
-            //{
-            //    // Use hit pose and camera pose to check if hittest is from the
-            //    // back of the plane, if it is, no need to create the anchor.
-            //    if ((hit.Trackable is DetectedPlane) &&
-            //        Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
-            //            hit.Pose.rotation * Vector3.up) < 0)
-            //    {
-            //        Debug.Log("Hit at back of the current DetectedPlane");
-            //    }
-            //    else
-            //    {
-            //        // Choose the Andy model for the Trackable that got hit.
-            //        GameObject prefab;
-            //        if (hit.Trackable is FeaturePoint)
-            //        {
-            //            prefab = AndyPointPrefab;
-            //        }
-            //        else
-            //        {
-            //            prefab = AndyPlanePrefab;
-            //        }
+            if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit))
+            {
+                // Use hit pose and camera pose to check if hittest is from the
+                // back of the plane, if it is, no need to create the anchor.
+                if ((hit.Trackable is DetectedPlane) &&
+                    Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
+                        hit.Pose.rotation * Vector3.up) < 0)
+                {
+                    Debug.Log("Hit at back of the current DetectedPlane");
+                }
+                else
+                {
+                    // Choose the Andy model for the Trackable that got hit.
+                    GameObject prefab;
+                    if (hit.Trackable is FeaturePoint)
+                    {
+                        prefab = AndyPointPrefab;
+                    }
+                    else
+                    {
+                        prefab = AndyPlanePrefab;
+                    }
 
-            //        // Instantiate Andy model at the hit pose.
-            //        var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
+                    // Instantiate Andy model at the hit pose.
+                    var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
 
-            //        // Compensate for the hitPose rotation facing away from the raycast (i.e. camera).
-            //        andyObject.transform.Rotate(0, k_ModelRotation, 0, Space.Self);
+                    // Compensate for the hitPose rotation facing away from the raycast (i.e. camera).
+                    andyObject.transform.Rotate(0, k_ModelRotation, 0, Space.Self);
 
-            //        // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
-            //        // world evolves.
-            //        var anchor = hit.Trackable.CreateAnchor(hit.Pose);
+                    // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
+                    // world evolves.
+                    var anchor = hit.Trackable.CreateAnchor(hit.Pose);
 
-            //        // Make Andy model a child of the anchor.
-            //        andyObject.transform.parent = anchor.transform;
-            //    }
-            //}
+                    // Make Andy model a child of the anchor.
+                    andyObject.transform.parent = anchor.transform;
+                }
+            }
         }
 
         /// <summary>

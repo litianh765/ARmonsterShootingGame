@@ -2,53 +2,67 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-public class Bullet : MonoBehaviour,IMoveObj
+namespace ARMon
 {
-
-    private Vector3 dir;
-    private float speed;
-
-    public float Speed { get => speed; set => speed=value; }
-
-    // Start is called before the first frame update
-    void Start()
+    public class Bullet : MonoBehaviour, IMoveObj
     {
-        speed = 2f;
-        Invoke("SelfDestory",3f);
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        Movement();
-    }
+        private Vector3 dir;
+        private float speed;
 
-    private void OnTriggerEnter(Collider col)
-    {
-        col.transform.SendMessage("Hitted",col);
-        SelfDestory();
-    }
+        public float Speed { get { return speed; } set { } }
+        public GameObject effectGO;
+        // Start is called before the first frame update
+        void Start()
+        {
+            speed = 2f;
+            Invoke("SelfDestory", 3f);
+        }
 
-    public void SetDir(Vector3 dir)
-    {
-        this.dir = dir;
-    }
+        // Update is called once per frame
+        void Update()
+        {
+           // Movement();
+        }
 
-    public void Movement()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, transform.position + dir, speed * Time.deltaTime);
-    }
+        //private void OnTriggerEnter(Collider col)
+        //{
+        //    col.transform.SendMessage("Hitted", col);
+        //    CustomController.HitEffect(effectGO,col.transform.position);
+        //    SelfDestory();
+        //}
 
-    //public void Hit(Collider col) 
-    //{
-    //    //GameManager.Instance.textCamPos.GetComponent<Text>().text = "I shoot somthing";
-    //    //transform.GetComponent<Test>().Kill(col.transform.gameObject);
-    //}
+        private void OnCollisionEnter(Collision collision)
+        {
+            Debug.Log(collision.transform.gameObject.name);
+            collision.transform.SendMessage("Hitted",collision);
+            CustomController.HitEffect(effectGO,collision.contacts[0].point);
+            SelfDestory();
+        }
 
-    void SelfDestory()
-    {
-        Destroy(this.gameObject);
-        Debug.Log("destory");
+        public void SetDir(Vector3 dir)
+        {
+            this.dir = dir;
+        }
+
+        public void Movement()
+        {
+            transform.position = Vector3.MoveTowards(transform.position, transform.position + dir, speed * Time.deltaTime);
+        }
+
+        void SelfDestory()
+        {
+            Destroy(this.gameObject);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.MoveHandler -= Movement;
+        }
+
+        private void OnEnable()
+        {
+            GameManager.MoveHandler+= this.Movement;
+        }
     }
 }

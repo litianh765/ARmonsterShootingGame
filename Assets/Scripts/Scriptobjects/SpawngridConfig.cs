@@ -8,4 +8,5 @@ public class SpawngridConfig : ScriptableObject
     public float width ;
     public float length ;
     public float gap ;
+    public float radius { get { return gap * 2/*Mathf.Sqrt(2)*/; } }
 }

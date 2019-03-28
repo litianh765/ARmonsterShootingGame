@@ -2,115 +2,134 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-[ExecuteInEditMode]
-public class Monster : MonoBehaviour
-{
 
-    SpawnGrid sg;
-    [SerializeField]
-    List<Collider> critialCol=new List<Collider>();
-    [SerializeField]
-    List<Collider> normalCol=new List<Collider>();
-
-    //hit value here
-    int critCount;
-    int normCount;
-    public int BoundsVal { get { return (critCount * 10 + normCount * 5); } }
-
-    //when hit, start countdown;
-    bool hitted;
-    bool crRunning;
-
-    public MonsterStatusConf msc;
-
-
-    //test field
-    public GameObject norm;
-    public GameObject crit;
-    void Hitted(Collider col)
+namespace ARMon {
+    [ExecuteInEditMode]
+    public class Monster : MonoBehaviour
     {
-        if (!hitted)
-        {
-            hitted = true;
-        }
-        Debug.LogFormat("{0} got hit",this.transform.gameObject.name);
-        try
-        {
-            ReleaseGrid();
-        }
-        finally { Debug.Log("no gs occupied"); }
 
-        if (critialCol.Contains(col))
+        SpawnGrid sg;
+        [SerializeField]
+        List<Collider> critialCol = new List<Collider>();
+        [SerializeField]
+        List<Collider> normalCol = new List<Collider>();
+
+        //hit value here
+        int critCount;
+        int normCount;
+        public int BoundsVal { get { return (critCount * 10 + normCount * 5); } }
+
+        //when hit, start countdown;
+        bool hitted;
+        bool crRunning;
+
+        public MonsterStatusConf msc;
+
+        GameManager gm;
+
+        //test field
+        public GameObject norm;
+        public GameObject crit;
+        void Hitted(Collision col)
         {
-            critCount++;
-            Debug.Log("Crit");
+            if (!hitted)
+            {
+                hitted = true;
+            }
+            Debug.LogFormat("{0} got hit", this.transform.gameObject.name);
+            try
+            {
+                ReleaseGrid();
+            }
+            finally { Debug.Log("no gs occupied"); }
+
+            if (critialCol.Contains(col.collider))
+            {
+                ++critCount;
+            }
+            else if (normalCol.Contains(col.collider))
+            {
+                ++normCount;
+            }
+            else { return; }
+            //disable kill to test the hit pos
+            //GameManager.Instance.Kill(col.transform.gameobject);
         }
-        else if (normalCol.Contains(col))
+
+        void ReleaseGrid()
         {
-            normCount++;
-            Debug.Log("Normal");
+            if (sg != null)
+            {
+                sg.IsOccupy = false;
+            }
         }
-        else { return; }
-        //disable kill to test the hit pos
-        //GameManager.Instance.Kill(col.transform.gameobject);
-    }
 
-    void ReleaseGrid()
-    {
-        GameManager.Instance.gridList.Add(sg);
-    }
-
-    void OccupyGrid(SpawnGrid sg)
-    {
-        this.sg = sg;
-    }
-
-    private void Start()
-    {
-        foreach (Vector3 v3 in msc.CritColPos)
+        void OccupyGrid(SpawnGrid sg)
         {
-            var col = transform.gameObject.AddComponent<BoxCollider>();
-            col.size = msc.size;
-            col.center = v3;
-            critialCol.Add(col);
+            this.sg = sg;
         }
-        foreach(Vector3 v3 in msc.NormColPos)
+
+        private void Start()
         {
-            var col = transform.gameObject.AddComponent<BoxCollider>();
-            col.size = msc.size;
-            col.center = v3;
-            normalCol.Add(col);
+            foreach (Vector3 v3 in msc.CritColPos)
+            {
+                var col = transform.gameObject.AddComponent<BoxCollider>();
+                col.size = msc.size;
+                col.center = v3;
+                critialCol.Add(col);
+            }
+            foreach (Vector3 v3 in msc.NormColPos)
+            {
+                var col = transform.gameObject.AddComponent<BoxCollider>();
+                col.size = msc.size;
+                col.center = v3;
+                normalCol.Add(col);
+            }
+            critCount = 0;
+            normCount = 0;
+            hitted = false;
+            gm = GameManager.Instance;
         }
-        critCount = 0;
-        normCount = 0;
-        hitted = false;
-    }
 
-    private void Update()
-    {
-        if (hitted)
+        private void Update()
         {
-            StartCoroutine(Die());
-        }
-    }
+            if (hitted)
+            {
+                StartCoroutine(Die());
+            }
 
-    IEnumerator Die()
-    {
-        if (!crRunning)
+        }
+
+
+        private void LateUpdate()
         {
-            crRunning = true;
-            //1s seems to fast, change it to 2
-            yield return new WaitForSeconds(2);
-            //crit.GetComponent<Text>().text = critCount.ToString();
-            //norm.GetComponent<Text>().text = normCount.ToString();
-
-            //todo currently, send the value to currentscore directly
-            //will send this info to coin(?), then when coin touches player, val increase.
-            //GameManager.Instance.CurrentScore += BoundsVal;
-
-            GameManager.Instance.SpawnCoin(GameManager.Instance.coin,this.gameObject,BoundsVal);
-            Destroy(this.gameObject);
+            TestFollowSG();
+            //if (ARMon.CustomController.InRange(this.transform.position, gm.deviceGO.transform.position, gm.Sconfig.radius)&&!hitted)
+            //{
+            //    Destroy(this.gameObject);
+            //}
         }
-        else { yield return null; }
+        IEnumerator Die()
+        {
+            if (!crRunning)
+            {
+                crRunning = true;
+                //1s seems to fast, change it to 2
+                yield return new WaitForSeconds(2);
+
+                //todo currently, send the value to currentscore directly
+                //will send this info to coin(?), then when coin touches player, val increase.
+                //GameManager.Instance.CurrentScore += BoundsVal;
+                var canv = GameObject.Find("Canv");
+                CustomController.SpawnCoin(GameManager.Instance.coin, canv,this.gameObject, BoundsVal);
+                Destroy(this.gameObject);
+            }
+            else { yield return null; }
+        }
+
+        void TestFollowSG()
+        {
+            transform.position = sg.GetPos();
+        }
     }
 }

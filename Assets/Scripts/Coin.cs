@@ -1,47 +1,56 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class Coin : MonoBehaviour,IMoveObj
+namespace ARMon
 {
-    private float speed;
-    public float Speed { get =>speed; set => throw new System.NotImplementedException(); }
-    public int BounsVal { get; set; }
-    //target is deivece
-    private GameManager gm;
-
-    void Awake()
+    public class Coin : MonoBehaviour, IMoveObj
     {
-        speed = 2f;
+        private float speed;
+        public float Speed { get { return speed; } set { } }
+        public int BounsVal { get; set; }
 
-        //test bounsval set
-        BounsVal = 10;
-    }
-    public void Movement()
-    {
-        transform.position = Vector3.MoveTowards(transform.position,gm.deviceGO.transform.position,speed*Time.deltaTime);
-        Debug.Log("move");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (transform.position == gm.deviceGO.transform.position)
+        private GameManager gm;
+        //target is ui go
+        private GameObject targetGO;
+        private Vector3 orgPos;
+        private RectTransform thisRect;
+        void Awake()
         {
-            gm.CurrentScore+=BounsVal;
-            Destroy(this.gameObject);
+            //hard coded speed;
+            speed = 500f;
+            thisRect = this.gameObject.GetComponent<RectTransform>();
+            orgPos = thisRect.position;
+            
+            //test bounsval set
+            BounsVal = 10;
+
         }
-    }
+        public void Movement()
+        {
+            Debug.Log(speed);
+            thisRect.position = Vector3.MoveTowards(thisRect.position,Vector3.zero,speed*Time.deltaTime);
+        }
 
-    private void OnEnable()
-    {
-        gm = GameManager.Instance;
-        GameManager.coinMove += this.Movement;
-        Debug.Log("enabled");
-    }
+        // Update is called once per frame
+        void Update()
+        {
+            if (thisRect.position.x <= 100&&thisRect.position.y<=100)
+            {
+                gm.CurrentScore += BounsVal;
+                Destroy(this.gameObject);
+            }
+        }
 
-    private void OnDisable()
-    {
-        GameManager.coinMove -= Movement;
+        private void OnEnable()
+        {
+            gm = GameManager.Instance;
+            GameManager.MoveHandler += this.Movement;
+            Debug.Log("enabled");
+        }
+
+        private void OnDisable()
+        {
+            GameManager.MoveHandler -= Movement;
+        }
     }
 }

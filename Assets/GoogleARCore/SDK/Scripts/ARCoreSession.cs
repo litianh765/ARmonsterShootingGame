@@ -97,6 +97,7 @@ namespace GoogleARCore
         [SuppressMemoryAllocationError(IsWarning = true, Reason = "Requires further investigation.")]
         public void OnDisable()
         {
+           
             LifecycleManager.Instance.DisableSession();
         }
 
